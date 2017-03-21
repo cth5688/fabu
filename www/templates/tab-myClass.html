@@ -1,0 +1,39 @@
+<ion-view view-title="courseList" hide-nav-bar="true">
+  <ion-header-bar style="height: 3rem" class="item-button-right">
+    <h2 class="title" style="text-overflow:clip">我的课程</h2>
+    <button class="button" ng-click="data.showDelete = !data.showDelete;" ng-disabled="bj_disabled">编辑</button>
+    <a ng-show="loginShow" href="#/tab/personal"
+       style="display: block;position: absolute;left: 50%;bottom:-400px; width: 100px;margin-left: -50px;text-align: center;">请登录</a>
+  </ion-header-bar>
+  <div class="scroll-content has-header" style="margin-top: 1rem;">
+    <div class="button-bar list" style="border-bottom:1px solid #333;margin-bottom: 2rem;">
+      <span style="width: 50%;height: 2rem;text-align: center;font-size: 1rem" ng-click="course()" ng-style="colorA">课程列表</span>|
+      <span style="width: 49.5%;height: 2rem;text-align: center; font-size: 1rem ;" ng-click="Collection()"
+            ng-style="colorB">收藏课程</span>
+    </div>
+
+    <ion-content>
+      <ion-list show-delete="data.showDelete" show-reorder="data.showReorder">
+        <ion-item ng-repeat="item in myCourseList" item="item" class="item-remove-animate">
+
+          <div class="row"  ng-show="courseShow" show-delete="data.showDelete">
+            <ion-delete-button class="ion-minus-circled" ng-click="del(item.ID)" ></ion-delete-button>
+            <div class="col col-40">
+              <img src="{{item.Cpic}}" alt="" class="pic3" ng-click="goIn3(item.ID)">
+            </div>
+            <div class="col col-60">
+              <p>{{item.Cdescribe}}</p>
+              <p class="p1">{{item.Cprice}}</p>
+            </div>
+
+          </div>
+          <!--<ion-infinite-scroll on-infinite="showList()" ng-if="moreData" distance="1%"></ion-infinite-scroll>  &lt;!&ndash;上拉加载&ndash;&gt;-->
+
+
+
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </div>
+</ion-view>
+

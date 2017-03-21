@@ -1,0 +1,45 @@
+
+<ion-view view-title="courseList" hide-nav-bar="true">
+  <ion-content>
+    <div class="item">
+      <div class="item-input item-input-wrapper item-input-inset" style="height: 2rem;">
+        <i class="icon ion-search" style="font-size: 30px"></i>
+        <input type="text" placeholder="请输入搜索内容" style="background: rgba(255,255,255,0)">
+      </div>
+      <div class="button-bar " style="height: 2rem;border-bottom:1px solid #333; margin-top: 0.5rem; ">
+        <h2 style="float: left;width: 50%;height: 2rem;text-align: center;" ng-click="course()" ng-style="colorA">课程列表</h2>|
+        <h2 style="float: left;width: 50%;height: 2rem;text-align: center;" ng-click="price()" ng-style="colorB">价格</h2>
+      </div>
+      <div class="item" id="show1" style="background: #c0c0c0;white-space: normal" ng-show="courseShow" >
+        <button class="btn1" ng-repeat="courseB in courseBtn" ng-click="searchCourse('','{{courseB.sysId}}','')">{{courseB.title}}</button>
+        <button class="btn1" ng-click="searchCourse('','','')">全部</button>
+      </div>
+      <div class="item" id="show2" style="background: #c0c0c0" ng-show="priceShow" >
+        <div class="item" style="background: #c0c0c0" ng-repeat="priceB in priceBtn" ng-click="searchCourse('','','{{priceB}}')">{{priceB}}</div>
+      </div>
+
+      <div class="row" ng-repeat="items in lists" >
+        <div class="col col-40">
+          <img src="{{items.Cpic}}" alt="" class="pic3" ng-click="goIn2(items.ID)">
+        </div>
+        <div class="col col-60">
+          <p>{{items.Cdescribe}}</p>
+          <p class="p1">{{items.Cprice}}</p>
+        </div>
+      </div>
+      <ion-infinite-scroll on-infinite="showList()" ng-if="moreData" distance="1%"></ion-infinite-scroll>  <!--上拉加载-->
+    </div>
+
+  </ion-content>
+</ion-view>
+<!--<script>-->
+  <!--var app=angular.module("myApp",["ionic"])-->
+  <!--app.controller("myCtrl", function($scope) {-->
+    <!--$scope.course=function(){-->
+      <!--$scope.courseShow=!$scope.show;-->
+    <!--}-->
+    <!--$scope.price=function(){-->
+      <!--$scope.courseShow=!$scope.show;-->
+    <!--}-->
+  <!--})-->
+<!--</script>-->

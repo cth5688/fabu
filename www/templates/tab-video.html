@@ -1,0 +1,83 @@
+<ion-view hide-tabs="true">
+<style>
+  .blue{
+    color:#00f;
+  }
+</style>
+  <ion-content>
+    <div style="height: 14rem;width: 100%;">
+      <video style="height:100%;width: 100%;background: #ccc;" controls="controls" loop>
+      <source src="../video/mov_aaa.mp4">
+      </video>
+
+      <!--yyy-->
+      <!--<video width="100%" height="100%" controls="controls">-->
+        <!--<source src="video/mov_aaa.mp4" type="video/ogg">-->
+      <!--</video>-->
+
+
+      <!--<video ng-show="!pcTrue" src="" style="height:100%;width: 100%;background: #ccc;" controls="controls" loop  ></video>-->
+
+      <span ng-show="VloginShow" style="position: absolute;left: 50%;top:100px;width: 18rem;margin-left: -9rem;text-align: center;font-size:2rem;">请<a href="#/tab/personal">登录</a>后，观看</span>
+    </div>
+    <div class="button-bar" style="margin: 0 auto">
+      <span ng-click="muluFun()" ng-style="Mcolor"
+        style="float: left;background: #E1E1E1;text-align: center;line-height: 3rem;width: 50%;height: 3rem;border-right:1px solid #fff; ">
+        目录 <i class="icon ion-chevron-down"></i></span>
+      <span ng-click="pingjiaFun()" ng-style="Pcolor" style="float: left;background: #E1E1E1;text-align: center;line-height: 3rem;width: 50%;height: 3rem; ">详情 <i
+        class="icon ion-chevron-down"></i></span>
+    </div>
+    <div class="list" ng-repeat="data1 in sucList" ng-show="VmuluShow">
+      <h3 style="margin-left: 1rem;">{{data1.CDname}}</h3>
+      <div ng-repeat="item in data1.Vlist">
+        <h4
+          style="white-space:normal; float: left;text-align: center;line-height: 3rem;width: 50%;height: 3rem;border-right:1px solid #fff; ">
+          {{item.Vname}}</h4>
+        <h4 style="white-space:normal; float: left;text-align: center;line-height: 3rem;width: 49.5%;height: 3rem; "> {{item.Vtime}}</h4>
+      </div>
+    </div>
+    <div class="list" ng-show="VpingjiaShow">
+      <h4 style="color:#0c60ee;">{{sucData.CDetails}}评价内容</h4>
+      <div class="item item-avatar-left" ng-model="evaluate" ng-repeat="item in evaluate">
+        <img src="{{sucData.Cpic}}" alt="" style="height:3rem;width:3rem;float: left;">
+        <p style="width: 45%;height: 3rem;float: left;">{{item.UserId}}<br>{{item.evaluate}}</p>
+        <p style="width: 45%;height: 3rem;float: right;">{{item.createAt}}</p>
+      </div>
+    </div>
+  </ion-content>
+  <ion-footer-bar style="padding: 0;">
+    <div class="tabs  tabs-icon-top">
+      <a class="tab-item" ng-click="modal.show()">
+        <i class="icon ion-edit"></i>
+        评价
+      </a>
+      <a class="tab-item" ng-click="shouchangFun()" ng-class="{true:'blue',false:''}[isActive]">
+        <i class="icon ion-android-star-outline" ></i>
+        {{shouchangYN}}
+      </a>
+      <a class="tab-item">
+        <i class="icon ion-ios-download-outline"></i>
+        购买
+      </a>
+
+    </div>
+  </ion-footer-bar>
+  <script id="templates/modal.html" type="text/ng-template" >
+    <ion-modal-view >
+      <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">请输入留言内容</h1>
+        <button class="button button-clear button-primary" ng-click="modal.hide()">关闭</button>
+
+      </ion-header-bar>
+      <ion-content class="padding">
+        <label class="item item-input">
+          <textarea style="height: 15rem;width: 100%;" ng-model="pingjiaT.pingjiaCon" type="text"  ></textarea>
+        </label>
+
+        <button class="button button-full button-positive" ng-click="tijiao()">提交</button>
+        </div>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+</ion-view>
+

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="../css/ext-all.css">
+  <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="../css/fc-all.css">
+  <link rel="stylesheet" href="../css/ClearButton.css">
+</head>
+<body class="xn-body">
+<div class="xn_nowpath"></div>
+<div class="xn_section_wrap">
+  <div class="xn_search_form" id="courseS">
+    <button class="xn_btn_success" onclick="window.open('courseMore.html')"
+            style="float: right;height: 35px;width: 100px;margin: 0 20px 0 0;background: green;color:#ffffff; ">
+      <i class="icon-plus"></i>添加
+    </button>
+  </div>
+</div>
+
+<div class="xn_section_wrap">
+  <div class="xn_section_title">
+    <span class="icon_wrap"><i class="icon-th"></i></span>
+    <span class="xn_title_name">课程列表</span>
+  </div>
+  <div id="courseList"></div>
+</div>
+
+</body>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/basicParameter.js"></script>
+<script src="../js/ext-all.js"></script>
+<script src="../js/basicExtModule.js"></script>
+<script src="../js/PagingToolBar.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/ClearButton.js"></script>
+<script>
+  var GLOBAL = GLOBAL || {};
+  Ext.onReady(function () {
+
+
+    /* 课程搜索框 三级联动 数据库*/
+    GLOBAL.powerStoreOne = Ext.create("Ext.data.Store", {
+      fields: ["title", "sysId", "fatherId"]
+    });
+    GLOBAL.powerStoreTwo = Ext.create("Ext.data.Store", {
+      fields: ["title", "sysId", "fatherId"]
+    });
+    GLOBAL.powerStoreThree = Ext.create("Ext.data.Store", {
+      fields: ["title", "sysId", "fatherId"]
+    });
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=getcategory",
+      type: "get",
+      dataType: "json",
+      async: false,
+      data: "",
+    }).done(function (result) {
+      GLOBAL.power = result.data;
+      /*保存全局变量*/
+      var arr = [];
+      for (var i = 0; i < GLOBAL.power.length; i++) {
+        if (GLOBAL.power[i].fatherId == 0) {
+          arr.push(GLOBAL.power[i])
+        }
+      }
+      GLOBAL.powerStoreOne.loadData(arr)
+    });
+
+    /*课程搜索框   联动搜索框*/
+    GLOBAL.searchBox = Ext.create("Ext.form.Panel", {
+      renderTo: "courseS",
+      margin: 10,
+      items: [{
+        xtype: "panel",
+        layout: "hbox",
+        items: [
+          new Ext.custom.textfield({
+            itemId: "course",
+            emptyText: "课程名称"
+          }), new Ext.custom.basicCombo({
+            itemId: "powerOne",
+            displayField: "title",
+            valueField: "sysId",
+            width: 250,
+            fieldLabel: "专业选择",
+            labelAlign: "right",
+            plugins: ["clearbutton"],
+            store: GLOBAL.powerStoreOne,
+            /*listeners 监听 相当于JS 中的addEventListeners 是否有值的改变*/
+            listeners: {
+              change: function (comb, newValue, oldValue) {
+                /*当有值改变时所触发的函数·*/
+//                console.log(comb);
+//              comb 取到basicCombo 里面的所有数据
+                GLOBAL.searchBox.down("#powerTwo").setValue("");
+                GLOBAL.searchBox.down("#powerThree").setValue("");
+                if (newValue) {
+                  var nV = newValue;
+                  var arr = [];
+                  for (var i = 0; i < GLOBAL.power.length; i++) {
+                    if (GLOBAL.power[i].fatherId == nV) {
+                      arr.push(GLOBAL.power[i])
+                    }
+                  }
+                  GLOBAL.powerStoreTwo.loadData(arr);
+                }
+              }
+            },
+
+          }), new Ext.custom.basicCombo({
+            itemId: "powerTwo",
+            displayField: "title",
+            valueField: "sysId",
+            store: GLOBAL.powerStoreTwo,
+            plugins: ["clearbutton"],
+            listeners: {
+              change: function (comb, newValue, oldValue) {
+                GLOBAL.searchBox.down("#powerThree").setValue("");
+                if (newValue) {
+                  var nV = newValue;
+                  var arr = [];
+                  for (var i = 0; i < GLOBAL.power.length; i++) {
+                    if (GLOBAL.power[i].fatherId == nV) {
+                      arr.push(GLOBAL.power[i])
+                    }
+                  }
+                  GLOBAL.powerStoreThree.loadData(arr);
+                }
+              }
+            }
+          }), new Ext.custom.basicCombo({
+            itemId: "powerThree",
+            displayField: "title",
+            valueField: "sysId",
+            plugins: ["clearbutton"],
+            store: GLOBAL.powerStoreThree,
+          }), {
+            xtype: "button",
+            width: 100,
+            height: 35,
+            text: "查询",
+            handler: function () {
+
+            }
+          }
+        ]
+      }]
+    })
+
+    /*创建表格courseGrid商店*/
+    GLOBAL.courseStore = Ext.create("Ext.data.Store", {
+      fields: ["Cname", "Cnumber", "ID", "onlineUser", "CategoryTwo", "createAt", "upDateAt", "isState", "isTop"]
+    });
+    /*courseGrid分页栏*/
+    GLOBAL.coursePage = Ext.create("PagingToolBar", {
+      id: "pageId",
+      onChange: function (num, pageFirst, pageSize) {//必须 传参（过度参num包含表格中所有数据  pageStart）
+        /*pageStart 第几页
+         pageFirst当前页第一条数据的下标
+         pageSize 每页显示的条数*/
+        var pageStart = pageFirst / pageSize + 1;
+        getCourseList(pageStart, pageFirst);
+      }
+    });
+
+    /*表格部分*/
+    GLOBAL.courseGrid = Ext.create("Ext.grid.Panel", {
+      renderTo: "courseList",
+      store: GLOBAL.courseStore,
+      bbar: GLOBAL.coursePage,
+      minHeight: BPR.gridMinHeight,
+      id: "courseId",
+      columns: [
+        {"header": "课程名称", width: 150, dataIndex: "Cname"},
+        {"header": "课程代号", width: 150, dataIndex: "Cnumber",},
+        {"header": "在学人数", width: 150, dataIndex: "onlineUser"},
+        {
+          "header": "所属分类", width: 150, dataIndex: "CategoryTwo",
+          renderer: function (value) {
+            for (var i = 0; i < GLOBAL.power.length; i++) {
+              if (GLOBAL.power[i].sysId == value) {
+                return GLOBAL.power[i].title
+              }
+            }
+          }
+        },
+        {"header": "编辑日期", width: 150, dataIndex: "upDateAt"},
+        {
+          "header": "状态", width: 150, dataIndex: "isState",
+          renderer: function (value) {
+            if (value == 3) {
+              return '<a class="xn_tablea" >已下架</a>'
+            } else if (value == 2) {
+              return '<a class="xn_tablea" >上架</a>'
+            } else {
+              return '<a class="xn_tablea" >草稿</a>'
+
+            }
+          }
+        },
+        {
+          "header": "操作", width: 150, dataIndex: "ID", flex: 1,
+          renderer: function (value, cellMeta, record) {
+            var isState = record.data.isState;
+            isTop = record.data.isTop;
+            var isDown = isTop ? "取消置顶" : "置顶 ";
+            if (isState == 2) {
+              return '<a class="xn_tablea" onclick="upDate(' + value + ')">下架</a><a class="xn_tablea" onclick="getCourseId(' + value + ')" )>编辑</a><a class="xn_tablea" onclick="courseDel(' + value + ')">删除</a><a class="xn_tablea" onclick="goUp(' + value + ')">' + isDown + '</a>'
+            } else {
+              return '<a class="xn_tablea" onclick="upDate(' + value + ')">上架</a><a class="xn_tablea"  onclick="getCourseId(' + value + ')">编辑</a><a class="xn_tablea" onclick="courseDel(' + value + ')">删除</a><a class="xn_tablea" onclick="goUp(' + value + ')">' + isDown + '</a>'
+            }
+
+//            '<a class="xn_tablea">上架</a><a class="xn_tablea">编辑</a><a class="xn_tablea">删除</a><a class="xn_tablea">置顶</a>'
+          }
+        }
+      ]
+
+    })
+    getCourseList()
+  });
+
+  function getCourseList(pageStart, pageFirst) {
+    var msgTip = new Ext.LoadMask(Ext.getCmp("courseId"), {
+      msg: "数据加载ing...",
+      removerMask: true,
+    }).show();
+
+    var dataInfo = {
+      searchText: GLOBAL.searchBox.down("#course").getValue(),
+      CategoryOne: GLOBAL.searchBox.down("#powerOne").getValue(),
+      CategoryTwo: GLOBAL.searchBox.down("#powerTwo").getValue(),
+      CategoryThree: GLOBAL.searchBox.down("#powerThree").getValue(),
+      pageStart: pageStart ? pageStart : 1,
+    };
+
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=show",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: dataInfo,
+    }).done(function (result) {
+      GLOBAL.coursePage.setPageSize(result.data.pageSize);
+      GLOBAL.coursePage.loadPage(pageFirst ? pageFirst : 0, result.data.count);
+      GLOBAL.courseStore.loadData(result.data.list);
+
+    })
+    msgTip.hide();
+  }
+  /*上架 下架 函数*/
+  function upDate(id) {
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=state",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: {
+        ID: id
+      }
+    }).done(function (result) {
+      Ext.Msg.alert("提示", result.success);
+      getCourseList();
+    })
+  }
+
+  /*删除*/
+  function courseDel(id) {
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=delete",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: {
+        ID: id
+      }
+    }).done(function (result) {
+      if (result.success) {
+        Ext.Msg.alert("提示", result.success);
+        getCourseList();
+      }
+      if (result.err) {
+        console.log(result.err);
+
+      }
+    })
+  }
+
+  /*置顶*/
+  function goUp(id) {
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=top",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: {
+        ID: id
+      }
+    }).done(function (result) {
+      Ext.Msg.alert("提示", result.success);
+      getCourseList();
+    })
+  }
+
+  /*获取课程ID*/
+  function getCourseId(courseId) {
+    window.open("courseMore.html?edit=edit&courseId=" + courseId)
+  }
+</script>
+</html>

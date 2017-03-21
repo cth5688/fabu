@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="../css/ext-all.css">
+  <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="../css/fc-all.css">
+  <link rel="stylesheet" href="../css/ClearButton.css">
+  <link rel="stylesheet" href="../css/header.css">
+</head>
+<body style="overflow: hidden">
+<div class="box">
+  <div class="header1">
+    <div class="header1_left"></div>
+    <div class="header1_right">
+      <ul>
+        <li><p><span class="icon-globe"></span></p>卓新思创</li>
+        <li><p><span class="icon-comment"></span></p>在线客服</li>
+        <li><p><span class="icon-book"></span></p>常见问题</li>
+        <li id="changePwd" onclick="changePwd()"><p><span class="icon-lock"></span></p>安全中心</li>
+        <li id="off" onclick="off()"><p><span class="icon-signout"></span></p>退出</li>
+      </ul>
+      <div class="user">
+        <p class="username" id="userName">冰羽</p>
+        <img src="../Images/tt.jpg">
+      </div>
+    </div>
+  </div>
+  <div class="header2">
+    <div class="header2_con">
+      <div>
+        <p><span class="icon-user"></span></p><span class="title1">用户管理</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show1 show">
+          <div iLink="userStyle.html" id="menu_index2" class="show_one"><p><span class="icon-user"></span></p>系统人员</div>
+          <div iLink="studentStyle.html" id="menu_index3" class="show_two"><p><span class="icon-group"></span></p>学员管理
+          </div>
+          <div class="show_three"><p><span class="icon-legal"></span></p>权限管理</div>
+        </div>
+      </div>
+      <div>
+        <p><span class="icon-book"></span></p><span class="title1">课程管理</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show2 show">
+          <div class="show_one" iLink="courseStyle.html" id="menu_index4"><p><span class="icon-th"></span></p>课程列表</div>
+          <div class="show_two" iLink="courseMore.html" id="menu_index5"><p><span class="icon-plus"></span></p>添加课程</div>
+          <div class="show_three" iLink="videoStyle.html" id="menu_index6"><p><span class="icon-facetime-video"></span></p>视频管理</div>
+          <div class="show_four"><p><span class="icon-pencil"></span></p>课程管理</div>
+        </div>
+      </div>
+      <div>
+        <p><span class="icon-tasks"></span></p>
+        <span class="title1">统计报表</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show3 show">
+          <div class="show_one"><p><span class="icon-book"></span></p>课程统计</div>
+          <div class="show_two"><p><span class="icon-group"></span></p>学员统计</div>
+          <div class="show_three"><p><span class="icon-globe"></span></p>访问统计</div>
+        </div>
+      </div>
+      <div>
+        <p><span class="icon-folder-close"></span></p><span class="title1">其他管理</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show4 show">
+          <div class="show_one"><p><span class="icon-envelope"></span></p>反馈意见</div>
+        </div>
+      </div>
+      <div>
+        <p><span class="icon-bookmark"></span></p><span class="title1">数据字典</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show5 show">
+          <div class="show_one"><p><span class="icon-bookmark"></span></p>常用选项</div>
+          <div class="show_two"><p><span class="icon-bookmark"></span></p>地区</div>
+          <div class="show_three"><p><span class="icon-bookmark"></span></p>专业</div>
+        </div>
+      </div>
+      <div>
+        <p><span class="icon-cog"></span></p><span class="title1">系统维护</span>
+        <div class="border-box">
+          <div class="top_left"></div>
+          <div class="bottom_right"></div>
+        </div>
+        <div class="show6 show">
+          <div class="show_one"><p><span class="icon-cog"></span></p>系统日志</div>
+          <div class="show_two"><p><span class="icon-calendar"></span></p>操作设置</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="big_box1" style="overflow:auto;"></div>
+</body>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/basicParameter.js"></script>
+<script src="../js/ext-all.js"></script>
+<script src="../js/basicExtModule.js"></script>
+<script src="../js/PagingToolBar.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/ClearButton.js"></script>
+<script>
+
+  var GLOBAL = GLOBAL || {};
+
+  /*Ext预加载*/
+  Ext.onReady(function () {
+    /*点击导航的时候，加载对应页面*/
+
+    /*第二栏 header 的hover 事件*/
+    (function () {
+      $(".header2_con>div").hover(function () {
+        $(this).find(".show").stop().slideDown(600)
+      }, function () {
+        $(this).find(".show").stop().slideUp(0)
+      })
+    })();
+    /*调用用户信息*/
+    returnInfo();
+    /*加载iframe */
+    loadHashPage();
+
+    $(window).resize(function(){
+      $("#ifra").height($(window).height()-100)
+    })
+
+  });
+  $(".show").delegate("div", "click", function () {
+    if ($(this).attr("iLink")) {
+      /*getAttribute()  JS 中获取 非本身属性*/
+      var iLink = $(this).attr("iLink");
+      var pathName1 = $(this).parent().siblings(".title1").html();
+      var pathName2 = $(this).text();
+      var pathName = "<span style='color: blue'>　　首页</span>" + "/" + pathName1 + "/" + pathName2;
+      var oLiId = $(this).attr("id");
+      loadPage(iLink, pathName, oLiId)
+//      alert(pathName)
+    }
+  })
+
+
+  /*修改密码*/
+  function changePwd() {
+    GLOBAL.pwdBox = new Ext.custom.basicWindow({
+      title: "修改密码",
+      width: 500,
+      height: 310,
+//      margin: 15,
+      bodyPadding: 30,
+      items: [{
+        xtype: "panel",
+        items: [
+          new Ext.custom.middletextfield({
+            itemId: "pwd",
+            margin: 20,
+            inputType: "password",
+            fieldLabel: "当前密码",
+            beforeLabelTextTpl: required,
+          }), new Ext.custom.middletextfield({
+            itemId: "newPwd",
+            margin: 20,
+            fieldLabel: "新密码",
+            inputType: "password",
+            beforeLabelTextTpl: required,
+          }), new Ext.custom.middletextfield({
+            itemId: "turePwd",
+            margin: 20,
+            inputType: "password",
+            fieldLabel: "确认密码",
+            beforeLabelTextTpl: required,
+          })
+        ]
+      }, {
+        xtype: "panel",
+        layout: "hbox",
+        items: [{
+          xtype: "button",
+          margin: "20 0 0 100",
+          height: 34,
+          width: 100,
+          text: "确认",
+          handler: function () {
+            var oldPwd = GLOBAL.pwdBox.down("#pwd").getValue(),
+              newPwd = GLOBAL.pwdBox.down("#newPwd").getValue(),
+              turePwd = GLOBAL.pwdBox.down("#turePwd").getValue();
+            if (oldPwd == "" || newPwd == "" || turePwd == "") {
+              Ext.Msg.alert("提示", "密码不得为空")
+            } else if (oldPwd == newPwd) {
+              Ext.Msg.alert("提示", "两次密码不可重复")
+            } else if(turePwd!=newPwd){
+              Ext.Msg.alert("提示", "两次密码不一致")
+            }else{
+              $.ajax({
+                url: "/Handler/AdminHandler.ashx?action=updatepass",
+                type: "post",
+                dataType: "json",
+                async: false,
+                data: {
+                  userPwd: oldPwd,
+                  newPwd: newPwd,
+                }
+              }).done(function (result) {
+                if (result.success) {
+                  Ext.Msg.alert("提示", result.success);
+                  GLOBAL.pwdBox.hide();
+                }
+                if (result.err) {
+                  Ext.Msg.alert("提示", result.err)
+                }
+              })
+            }
+          }
+        }, {
+          xtype: "button",
+          margin: "20 0 0 100",
+          height: 34,
+          width: 100,
+          text: "取消",
+          handler: function () {
+          },
+          style: "background:orange;border:none;"
+        }]
+      }]
+
+    }).show()
+  }
+  /*与 html div标签中添加onclick 存一*/
+  //    $("#changePwd").click(function () {
+  //      changePwd();
+  //    });
+
+  /*返回用户信息*/
+  function returnInfo() {
+    $.ajax({
+      url: "/Handler/AdminHandler.ashx?action=returnuserinfo",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: "",
+    }).done(function (result) {
+      if (result.success) {
+        $("#userName").html(result.turename)
+      }
+//      if(result.err){
+//
+//      }
+    })
+  }
+  /*退出登录*/
+  function off() {
+    $.ajax({
+      url: "/Handler/AdminHandler.ashx?action=quit",
+      type: "post",
+      dataType: "json",
+      async: false,
+      data: "",
+    }).done(function (result) {
+      if (result.success) {
+        window.location = "login.html";
+
+      }
+      if (result.err) {
+        console.log(result.err);
+      }
+    })
+  }
+
+  /*点击时根据对应的路径调到行对应的Html*/
+  function loadHashPage() {
+    if (window.location.hash) {
+      var menuHashId = window.location.hash.substring(1);
+      if ($("#" + menuHashId).length > 0) {
+        /*trigger 给匹配元素绑定对应的事件
+         * 没有执行其他绑定的事件时 会一直加载当前元素的身上*/
+        $("#" + menuHashId).trigger("click");
+      } else {
+        /*没有执行点击事件时  所执行的操作*/
+        loadPage("index.html", "", "")
+      }
+    } else {
+      loadPage("index.html", "", "")
+    }
+  }
+/*调整iframe 的宽高*/
+//  var iframeResixe
+
+
+  /*加载iframe 框架*/
+  function loadPage(link, pathName, id) {
+    /*吧iframe 加载 进在页面中放置 空的div 中*/
+    var h = $(window).height() - 100;
+    $("#big_box1").html("<iframe id='ifra' width='100%' height=" + h + " src=" + link + " frameborder='0'></iframe>")
+    /* frameborder="0"   style="border:0"  用来取消 iframe 的边*/
+    $("iframe").load(function () {
+      $(this).contents().find(".xn_nowpath").html(pathName);
+    });
+    window.location.hash = id;
+  }
+
+
+</script>
+</html>

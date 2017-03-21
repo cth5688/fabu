@@ -1,0 +1,17 @@
+<ion-view view-title="personal" hide-nav-bar="true">
+  <ion-nav-view></ion-nav-view>  <!--侧划效果-->
+  <ion-content style="background: url('img/login_bg.png');background-size:100% " >
+    <div class="padding-left padding-right" style="text-align: center; margin-top: 4rem">
+      <img src="img/login_logo.png" alt="" style="height: 30%;width:30%;margin-bottom: 1rem;">
+      <div style="width: 90%;position: relative;left: 5%;">
+        <input style="width: 100%;background: rgba(255,255,255,0.6)" ng-model="userInfo.userName"  type="text" placeholder="用户名"  >
+        <input style="width: 100%;margin-top: 1rem;background: rgba(255,255,255,0.6)"  ng-model="userInfo.userPwd" type="password" placeholder="密码" >
+        <button class="button button-block button-positive" ng-click="doLogin()">登录</button>
+      </div>
+    </div>
+    <a href="#/tab/register" style="float: left;margin-left: 2rem;">注册</a>
+    <a href="" style="float: right;margin-right: 2rem;">忘记密码</a>
+
+  </ion-content>
+</ion-view>
+

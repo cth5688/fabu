@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/ext-all.css">
+    <link rel="stylesheet" href="css/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="css/fc-all.css">
+    <link rel="stylesheet" href="css/ClearButton.css">
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/basicParameter.js"></script>
+    <script src="js/ext-all.js"></script>
+    <script src="js/basicExtModule.js"></script>
+    <script src="js/PagingToolBar.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/ClearButton.js"></script>
+
+</head>
+<body class="">
+<span>--示例--</span>
+<div class="xn_section_wrap">
+    <div class="xn_section_title">
+        <span class="icon_wrap"><i class="icon-th"></i></span>
+        <span class="xn_title_name">列表示例</span>
+    </div>
+    <div id="gridBox"></div>
+</div>
+</body>
+<script>
+    var GLOBAL = GLOBAL||{};
+    Ext.onReady(function(){
+        GLOBAL.powerStoreone = Ext.create("Ext.data.Store",{
+            fields:["name","classifyCode","fatherCode"]
+        });
+        GLOBAL.powerStoretwo = Ext.create("Ext.data.Store",{
+            fields:["name","classifyCode","fatherCode"]
+        });
+        GLOBAL.gridStore = Ext.create("Ext.data.Store",{
+            fields:["title","nomber","courseId","classifyCode","updateAt","createAt","status"]
+        });
+        GLOBAL.pageBar = Ext.create("PagingToolBar",{
+            onChange:function(num,pageStart){
+                loadList(pageStart)
+            }
+        });
+        GLOBAL.gridBox = Ext.create("Ext.grid.Panel",{
+            store:GLOBAL.gridStore,
+            bbar:GLOBAL.pageBar,
+            minHeight:BPR.gridMinHeight,
+            columns:[
+                {"header":"课程名称",width:150,dataIndex:"title"},
+                {"header":"课程代号",width:150,dataIndex:"nomber"},
+                {"header":"所属分类",width:150,dataIndex:"classifyCode",flex:1,
+                    renderer:function(value){
+                        if (value==3){return "<span>html</span>"}
+                        if (value==4){return "<span>css</span>"}
+                        if (value==5){return "<span>js</span>"}
+                        if (value==6){return "<span>java</span>"}
+                        if (value==7){return "<span>php</span>"}
+                        if (value==8){return "<span>nodeJs</span>"}
+                    }
+                },
+                {"header":"状态",width:150,dataIndex:"status"},
+                {"header":"编辑日期",width:150,dataIndex:"createAt"},
+                {"header":"操作",width:150,dataIndex:"courseId",
+                renderer:function(value,cellmeta,record){
+                    GLOBAL.title=record.data.title;
+                    return "<a class='xn_tablea' onclick='del("+value+")'>删除</a><a class='xn_tablea' onclick='edit("+value+")' >编辑</a>"
+                }}
+            ],
+            outScroll:true,
+            renderTo:"gridBox"
+        });
+        loadList()
+    });
+    function edit(id){
+        GLOBAL.basicW=new Ext.custom.basicWindow({
+            title:"编辑课程",
+            width:500,
+            height:320,
+            items:[{
+                xtype:"panel",
+                padding:20,
+                items:[
+                    new Ext.custom.middletextfield({
+                        itemId:"title",
+                        fieldLabel:"课程名称",
+                        margin:"0 0 10 0",
+                    }),
+                    new Ext.custom.middletextfield({
+                        itemId:"nomber",
+                        fieldLabel:"课程代号",
+                        margin:"0 0 10 0",
+                    }),
+                    {
+                        xtype:"panel",
+                        layout:"hbox",
+                        items:[
+                            new Ext.custom.basicCombo({
+                                width:220,
+                                margin:"0 0 10 0",
+                                fieldLabel:"所属分类",
+                                itemId:"Anthorty",
+                                displatField:"name",
+                                valueField:"classifyCode",
+                                plugins:["clearbutton"],
+                                store:GLOBAL.powerStoreone,
+                            }),
+                            new Ext.custom.basicCombo({
+                                width:150,
+                                margin:"0 0 10 0",
+                                name:"",
+                                itemId:"Anthorty2",
+                                displatField:"name",
+                                valueField:"classifyCode",
+                                plugins:["clearbutton"],
+                                store:GLOBAL.powerStoretwo,
+                            }),
+                        ]
+                    }
+
+                ]
+            },{
+                xtype:"panel",
+                layout:"hbox",
+                items:[{
+                    xtype:"button",
+                    width:100,
+                    height:34,
+                    margin:"10 20 0 100",
+                    text:"确定",
+                    handler:function(){
+                        updata(id)
+                    }
+                },{
+                    xtype:"button",
+                    width:100,
+                    height:34,
+                    margin:"10 20 0 10",
+                    text:"取消",
+                    style:"background:blue",
+                    handler:function(){
+                        GLOBAL.basicW.hide()   ;
+                    },
+                }]
+            }]
+        }).show();
+        var data = GLOBAL.gridBox.getSelectionModel().getSelection()[0].data
+        GLOBAL.basicW.down("#title").setValue(data.title)
+        GLOBAL.basicW.down("#nomber").setValue(data.nomber)
+        GLOBAL.basicW.down("#Anthorty").setValue(parseInt(data.classifyCode))
+        LoadXl()
+    }
+    function loadList(pagestart){
+        var pStart = pagestart?pagestart:0;
+        GLOBAL.pageBar.setPageSize(10);
+        GLOBAL.pageBar.loadPage(pStart,15);
+        GLOBAL.list = GLOBAL.tableData.slice(pagestart?pagestart:0,pagestart?15:10)
+        GLOBAL.gridStore.loadData(GLOBAL.list);
+    }
+    function LoadXl(){
+        var arr = [];
+        for (var i = 0; i < GLOBAL.classifyData.length; i++) {
+            if (GLOBAL.classifyData[i].fatherCode == null) {
+                arr.push(GLOBAL.classifyData[i])
+            }
+        }
+        GLOBAL.powerStoreone.loadData(arr);
+    }
+    function del(){
+        var data = GLOBAL.gridBox.getSelectionModel().getSelection()
+        console.log(data);
+        for(var i=0;i<data.length;i++){
+            GLOBAL.gridStore.remove(data[i])
+        }
+//        for (var k = 0; k <= GLOBAL.tableData.length; k++) {
+//            if (GLOBAL.tableData[k].courseId == id) {
+//                console.log(GLOBAL.tableData[k])
+//                delete GLOBAL.tableData[k];
+//                loadList()
+//                break;
+//            }
+//        }
+    }
+    function updata(id){
+        for (var k = 0; k <GLOBAL.tableData.length; k++) {
+            if (GLOBAL.tableData[k].courseId == id) {
+                GLOBAL.tableData[k].title=GLOBAL.basicW.down("#title").getValue();
+                GLOBAL.tableData[k].nomber=GLOBAL.basicW.down("#nomber").getValue();
+                GLOBAL.basicW.hide()
+            }
+        }
+        loadList();
+    }
+</script>
+<script src="js/demoData.js"></script>
+</html>

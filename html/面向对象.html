@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    div {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+<div id="www"></div>
+</body>
+<script>
+  /*通过js来给边他的背景色*/
+  window.onload = function () {
+    /*var dv = document.getElementById("dv");
+     dv.style.backgroundColor = "red";*/
+    /*存在的问题，现在改变一个，要改变多个是不是很麻烦？*/
+
+//        function I(id){
+//            return document.getElementById(id);
+//        };
+    /*封装就是提取公共的代码*/
+    /*{background:"black",border:"1px solid red"}*/
+    /* function css(tag,styles){
+     for(var k in styles){
+     tag.style[k]=styles[k];
+     }
+     };
+     var aa = I("dv");
+     css(aa,{
+     background:"black",
+     border:"5px solid red"
+     });*/
+
+    var feiCui = {
+      id: function (id) {
+        return document.getElementById(id);
+      },
+      css: function (tag, styles) {
+        for (var k in styles) {
+          tag.style[k] = styles[k];
+        }
+      }
+    };
+    /*面向对象的三大特性：
+     * 1.继承  2.封装  3.多态
+     *
+     * 面向对象节省内存吗？
+     * 不节省内存；
+     * 但是：好的开发人员写的面向对象的代码，要比普通的
+     * 开发人员写的省内存；
+     *
+     * */
+
+    var Person = feiCui.id("www");
+
+    feiCui.css(Person, {
+      background: "red",
+      border: "5px solid black",
+      height: "666px"
+    });
+
+    /*面向对象是一种开发的思维方式，js驶入类型语言，
+     * 就是把多个函数，变成某个对象的属性方法*/
+  };
+
+  /*js 是由什么组成的？
+   * dom ， bom ，ecmascript；
+   * 说知道ecmascript和js的关系？
+   * 1.组成部分  2.核心
+   * ecma；
+   * javascript  livescript;
+   * 网景公司给自己的浏览器的脚本语言；浏览器市场占有率超过了90%；
+   * 微软看到这个市场：发开了自己的浏览和自己的脚本语言；
+   * 他们俩开打仗？
+   * 一个叫ecma的国际组织出来，它规定了ecmascript，浏览器脚本语言的规范
+   * 好比是普通话（ecmascript）；js北京话
+   *
+   * */
+
+
+</script>
+</html>

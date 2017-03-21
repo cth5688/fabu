@@ -1,0 +1,17 @@
+<ion-view view-title="注册" style="background: url('img/register_bg.jpg') no-repeat ;background-size:  100% 100%;height: 100%;">
+  <ion-nav-view></ion-nav-view>
+  <ion-header-bar>
+    <i class="icon ion-android-arrow-back " style="line-height: 35px;"></i>
+  </ion-header-bar>
+  <ion-content >
+    <div class="" style="text-align: center;width: 90%;position: relative;left: 5%;top:4rem; " >
+      <h1 class="title light">注册</h1>
+      <input ng-model="regInfo.userName" type="text" placeholder="用户名" style="width: 100%;height: 3rem;background: rgba(255,255,255,0.3);">
+      <input ng-model="regInfo.email" type="text" placeholder="邮箱" style="width: 100%;height: 3rem;background: rgba(255,255,255,0.3);">
+      <input ng-model="regInfo.phone" type="text" placeholder="手机号" style="width: 100%;height: 3rem;background: rgba(255,255,255,0.3);">
+      <input ng-model="regInfo.userPwd" type="password" placeholder="密码" style="width: 100%;height: 3rem;background: rgba(255,255,255,0.3);">
+      <input  type="password" placeholder="再次输入" style="width: 100%;height: 3rem;background: rgba(255,255,255,0.3);">
+      <button class="button button-block button-positive" ng-click="join()">注册</button>
+    </div>
+  </ion-content>
+</ion-view>

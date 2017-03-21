@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>后台登录界面</title>
+  <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    ul, li {
+      list-style: none;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    /*body{background:url("images/bg.jpg");background-size:100%; }*/
+    .main {
+      height: 100vh;
+      width: 100vw;
+      background: url("../Images/bg.jpg") no-repeat;
+      background-size: 100% 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content {
+      height: 340px;
+      width: 560px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin: -170px 0 0 -280px;
+      /*background: #ffcccc;*/
+    }
+
+    .title {
+      background: url("../Images/back_logo.png") no-repeat;
+      height: 41px;
+      width: 270px;
+      margin: 10px auto 0;
+    }
+
+    .username {
+      height: 36px;
+      width: 455px;
+      position: absolute;
+      left: 50px;
+      top: 80px;
+      /*background: #00B0FF*/
+    }
+
+    .password {
+      height: 36px;
+      width: 455px;
+      position: absolute;
+      left: 50px;
+      top: 142px;
+      /*background: #00B0FF*/
+    }
+
+    .yanzhengma {
+      height: 36px;
+      width: 355px;
+      position: absolute;
+      left: 50px;
+      top: 203px;
+      /*background: #00B0FF*/
+    }
+
+    .content > div > p {
+      height: 34px;
+      width: 28px;
+      /*background: #00CC00;*/
+      line-height: 36px;
+      font-size: 20px;
+      text-align: center;
+      border-bottom: 1px solid #ffffff;
+      border-top: 1px solid #ffffff;
+      border-left: 1px solid #ffffff;
+      float: left;
+    }
+
+    .content > div > input {
+      height: 34px;
+      width: 415px;
+      float: left;
+      border: 1px solid #ffffff;
+      background: rgba(0, 0, 0, 0);
+      color: #ffffff;
+      outline: none;
+    }
+
+    button {
+      height: 40px;
+      width: 110px;
+      position: absolute;
+      bottom: 20px;
+      color: white;
+      outline: none;
+      cursor: pointer;
+      border: none;
+    }
+
+    .wangjimima {
+      left: 0;
+      background: #0044cc;
+    }
+
+    .login {
+      right: 0;
+      background: orangered;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main">
+  <canvas width="1920" style="position: absolute;z-index: 1"></canvas>
+  <div class="content" style="z-index: 11;">
+    <div class="title"></div>
+    <div class="username">
+      <p class="username_pic">
+        <span class="icon-user"></span>
+      </p>
+      <input id="userName" type="text" placeholder="用户名">
+    </div>
+    <div class="password">
+      <p class="password_pic">
+        <span class="icon-lock"></span>
+      </p>
+      <input id="password" type="password" placeholder="密码">
+    </div>
+    <div class="yanzhengma">
+      <p class="yanzhengma_pic">
+        <span class="icon-lock"></span>
+      </p>
+      <input type="text" placeholder="验证码" style="width: 315px;">
+    </div>
+    <button class="wangjimima">忘记密码</button>
+    <button class="login">登录</button>
+  </div>
+</div>
+</body>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/canvas_dote.js"></script>
+<script>
+
+  $(function () {
+    /*键盘  回车事件*/
+    $(document).keydown(function(ev){
+      var ev=ev||event;
+      if(ev.keyCode==13){
+        ajax()
+
+      }
+//      alert(ev.keyCode)
+    });
+
+    function ajax() {
+      var userName = $("#userName").val();
+      var password = $("#password").val();
+      $.ajax({
+        /*url 请求路径*/
+        url: "/Handler/AdminLoginAndRegHandler.ashx?action=login",
+        /*type 传输方式*/
+        type: "post",
+        /*文件传输类型*/
+        dataType: "json",
+        /*async 同步异步*/
+        async: "false",
+        data: {
+          userName: userName,
+          password: password,
+        },
+        /*jq3.0版本以后淘汰*/
+//      success:function(result){
+//        console.log(result);
+//      },
+//      err:function(result){
+//        console.log(result);
+//      }
+      }).done(function (result) {
+//        console.log(result)
+
+        if (result.success) {
+          alert(result.success);
+          window.location = "header.html";
+
+        }
+        if (result.err) {
+          console.log(result.err);
+        }
+      });
+    }
+
+    $(".login").click(function () {
+      ajax();
+    })
+  })
+</script>
+</html>

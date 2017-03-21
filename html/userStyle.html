@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="../css/ext-all.css">
+  <link rel="stylesheet" href="../css/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="../css/fc-all.css">
+  <link rel="stylesheet" href="../css/ClearButton.css">
+  <!--<link rel="stylesheet" href="../css/index2.css">-->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    ul, li {
+      list-style: none
+    }
+
+    .main {
+      height: 500px;
+      width: 1300px;
+      margin: 0 auto;
+    }
+
+    .title {
+      height: 47px;
+      width: 300px;
+      line-height: 46px;
+      font-size: 15px;
+      color: #777877;
+      min-width: 1000px;
+    }
+
+    .xn_section_wrap {
+      margin: 30px auto 0
+    }
+  </style>
+</head>
+<body style="background:#ffffff ;" class="xn-body">
+
+<div class="main">
+  <div class="xn_nowpath"></div>
+
+  <div id="search"></div>
+
+  <div class="xn_section_wrap">
+    <div class="xn_section_title">
+      <span class="icon_wrap"><i class="icon-th"></i></span>
+      <span class="xn_title_name">系统人员列表</span>
+    </div>
+    <div id="gridBox"></div>
+  </div>
+
+</div>
+</body>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/basicParameter.js"></script>
+<script src="../js/ext-all.js"></script>
+<script src="../js/basicExtModule.js"></script>
+<script src="../js/PagingToolBar.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/ClearButton.js"></script>
+<script>
+  var GLOBAL = GLOBAL || {};
+  Ext.onReady(function () {
+    /*当改变窗口时，自动刷新表格*/
+    Ext.EventManager.onWindowResize(function(){
+      GLOBAL.gridBox.getView().refresh();
+    });
+
+    /*创建人员选择仓库*/
+    GLOBAL.powerStore = Ext.create("Ext.data.Store", {
+      fields: ["power", "powerCode"]
+    })
+
+    /*获取权限*/
+    $.ajax({
+      url: "/Handler/CourseHandler.ashx?action=getpower",
+      type: "get",
+      dataType: "json",
+      async: false,
+      data: "",
+    }).done(function (result) {
+      if (result.success) {
+        GLOBAL.powerStore.loadData(result.data)
+      }
+      if (result.err) {
+        Ext.Msg.alert("提示", result.err)
+      }
+    });
+
+    /*搜索框*/
+    GLOBAL.searchBox = Ext.create("Ext.panel.Panel", {
+      "renderTo": "search",
+      items: [{
+        xtype: "panel",
+        height: 55,
+        width: 1300,
+        layout: "hbox",
+        style: "border:1px solid #cdcdcd",
+        items: [
+          new Ext.custom.middletextfield({
+            itemId: "name",
+            name: "",
+            emptyText: "模糊 搜索姓名",
+            margin: "10 0 0 10",
+            height: 35,
+          }), {
+            xtype: "panel",
+            html: "<button class='xn_btn_success' style='color:#fff;width:100px;height:34px;outline: none;border:none;margin:10px 0 0 20px; ' onclick='getCoureList()'>查询</button>",
+//            handler: function () {
+//
+//            }
+          }, {
+            xtype: "panel",
+            html: "<button class='xn_btn_success' style='color:#fff;width:100px;height:34px;outline: none;border:none;margin:10px 0 0 600px;background:#f66120;' onclick='userWin()'><span></span>添加</button>",
+//            handler: function () {
+//            /*js中的onclick事件*/
+//            }
+          }
+        ]
+      }]
+    });
+
+    //表格
+
+    /*创建系统人员库  store */
+    GLOBAL.adiminStore = Ext.create("Ext.data.Store", {
+      fields: ["userName", "turename", "power", "phone", "powerCode", "createAt", "upDateAt", "tokenId"]
+    });
+    /* 分页栏*/
+    GLOBAL.pageBar = Ext.create("PagingToolBar", {
+      id: "pageId",
+      onChange: function (num, pageFirst, pageSize) {//必须 传参（过度参num包含表格中所有数据  pageStart）
+        /*pageStart 第几页
+         pageFirst当前页第一条数据的下标
+         pageSize 每页显示的条数*/
+        var pageStart = pageFirst / pageSize + 1;
+
+        getCoureList(pageStart, pageFirst);
+      }
+    });
+    /*系统人员列表*/
+    GLOBAL.gridBox = Ext.create("Ext.grid.Panel", {
+      store: GLOBAL.adiminStore, //数据仓库
+      bbar: GLOBAL.pageBar,  // 分页栏
+      minHeight: BPR.gridMinHeight,  //设置最小高度
+      id: "grid", /*控制遮罩层*/
+      columns: [
+        {"header": "用户名", width: 150, dataIndex: "userName"},
+        {"header": "姓名", width: 150, dataIndex: "turename", flex: 1},
+        {"header": "后台权限", width: 150, dataIndex: "power"},
+        {"header": "手机", width: 150, dataIndex: "phone"},
+        {"header": "编辑日期", width: 150, dataIndex: "upDateAt"},
+        {"header": "操作", width: 200, dataIndex: "tokenId",
+          renderer: function (value) {//重置表格数据，返回新的内容
+            /*value 代表当前单元格的值
+             * record 整行数据
+             * cellmeta  行信息*/
+            return "<a class='xn_tablea'  onclick=' userWin("+ value+")'>编辑</a><a  class='xn_tablea' onclick='userDel(" + value + ")'>删除</a>"
+          }
+        }
+      ],
+      autoScroll: true,
+      renderTo: "gridBox",
+    });
+    getCoureList();
+  });
+
+
+  function getCoureList(pageStart, pageFirst) {
+    var msgTip = new Ext.LoadMask(Ext.getCmp("grid"), {
+      msg: "数据加载ing...",
+      removerMask: true,
+    }).show();
+
+    $.ajax({
+      url: "/Handler/AdminHandler.ashx?action=show",
+      type: "get",
+      dataType: "json",
+      async: false,
+      data: {
+        searchText: GLOBAL.searchBox.down("#name").getValue(),
+        pageStart: pageStart ? pageStart : 1,
+      }
+    }).done(function (result) {
+//      console.log(result);
+      GLOBAL.pageBar.setPageSize(result.data.pageSize);
+      GLOBAL.pageBar.loadPage(pageFirst ? pageFirst : 0, result.data.count);
+      GLOBAL.adiminStore.loadData(result.data.list)
+    }), msgTip.hide();
+
+  }
+
+  /*删除用户*/
+  function userDel(id) {
+    $.ajax({
+      url: "/Handler/AdminHandler.ashx?action=delete",
+      type: "get",
+      dataType: "json",
+      async: false,
+      data: {
+        tokenId: id
+      }
+    }).done(function (result) {
+      if (result.success) {
+        Ext.Msg.alert("提示", result.success)
+        getCoureList();
+      }
+
+    })
+  }
+  /*添加 修改*/
+  function userWin(userId) {
+    GLOBAL.userWin = new Ext.custom.basicWindow({
+      title: "管理员添加",
+      width: 500,
+      height: 320,
+      padding: "10 0 0 40",
+      items: [{
+        xtype: "panel",
+//        margin:"20 0 20 50",
+        items: [
+          new Ext.custom.middletextfield({
+            itemId: "userName",
+            fieldLabel: "用户名",
+            margin: "10 0",
+            beforeLabelTextTpl: required,
+          }), new Ext.custom.middletextfield({
+            itemId: "tureName",
+            fieldLabel: "姓名",
+            margin: "10 0",
+            beforeLabelTextTpl: required,
+          }), new Ext.custom.middletextfield({
+            itemId: "phone",
+            fieldLabel: "手机号",
+            margin: "10 0",
+            beforeLabelTextTpl: required,
+          }), new Ext.custom.basicCombo({
+            itemId: "power",
+            displayField: "power",
+            valueField: "powerCode",
+            fieldLabel: "权限选择",
+            margin: "10 0",
+            width: 370,
+            store: GLOBAL.powerStore,
+            beforeLabelTextTpl: required,
+          })/*result.data.dirlist*/
+        ]
+      }, {
+        xtype: "panel",
+        layout: "hbox",
+        margin: "30 0 0 20",
+        items: [{
+          xtype: "button",
+          width: 100,
+          height: 34,
+          text: "确定",
+          handler: function () {
+            var userInto = {
+              userName: GLOBAL.userWin.down("#userName").getValue(),
+              tokenId: GLOBAL.userId,
+              turename: GLOBAL.userWin.down("#tureName").getValue(),
+              password: GLOBAL.userId ? "" : "123456",
+              phone: GLOBAL.userWin.down("#phone").getValue(),
+              power: GLOBAL.userWin.down("#power").getValue(),
+            };
+            var url =userId ? "/Handler/AdminHandler.ashx?action=update" : "/Handler/AdminLoginAndRegHandler.ashx?action=add"
+            $.ajax({
+              url: url,
+              type: "post",
+              dataType: "json",
+              async: false,
+              data: userInto,
+            }).done(function (result) {
+              GLOBAL.userWin.hide();
+              Ext.Msg.alert("提示", result.success);
+              getCoureList();
+            })
+          }
+        }, {
+          xtype: "button",
+          width: 100,
+          height: 34,
+          text: "取消",
+          style: "background:orange;border:none;",
+          margin: "0 0 0 150",
+          handler: function () {
+            GLOBAL.userWin.hide();
+          }
+        }]
+      }]
+    }).show();
+
+/*修改*/
+    if (userId) {
+//      data. 取到GLOBAL.gridBox 的模型数据
+      var data = GLOBAL.gridBox.getSelectionModel().getSelection()[0].data;
+      GLOBAL.userWin.down("#userName").setValue(data.userName);
+      GLOBAL.userWin.down("#userName").setDisabled(true);
+      GLOBAL.userWin.down("#tureName").setValue(data.turename);
+      GLOBAL.userWin.down("#phone").setValue(data.phone);
+      GLOBAL.userWin.down("#power").setRawValue(data.power);
+      GLOBAL.userId=userId;
+      getCoureList();
+    }
+  }
+</script>
+</html>

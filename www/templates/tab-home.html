@@ -1,0 +1,105 @@
+<!--<body ng-controller="myCtrl" style="background: url('../img/login_bg.png')">-->
+
+
+<ion-view view-title="home"  hide-nav-bar="true">
+
+      <ion-content>
+        <div class="bar bar-header ">
+          <div class="item-avatar-left" style="position: relative;">
+            <img src="img/person_touxiang.png" alt="" style="position: absolute;left: 10px;top:-3px">
+          </div>
+          <div class="item item-input-wrapper item-input-inset">
+            <input type="text" placeholder="Search 环境里面的" style="background: rgba(255,255,255,0)">
+          </div>
+          <button class="button icon ion-search ">
+          </button>
+        </div>
+        <!--轮播图-->
+        <ion-slide-box auto-play="true" does-continue="true" slide-interval="2000" class="has-header "
+                       delegate-handle="slide" show-pager="true">
+
+          <ion-slide ng-repeat="pic in bannerL ">
+            <div style="height: 220px;width: 100%;">
+              <img style="height: 100%;width: 100%;" src="{{pic.Cpic}}" alt="">
+            </div>
+          </ion-slide>
+
+        </ion-slide-box>
+
+        <!--好评榜-->
+        <div class="item">
+          <div class="padding-bottom">好评榜</div>
+          <div class="row" ng-repeat="goodListRaw in goodL">
+            <div class="col col-50" ng-repeat="goodListCol in goodListRaw">
+              <img src="{{goodListCol.Cpic}}" alt="" class="pic1" ng-click="goIn1(goodListCol.ID)">
+              <p>{{goodListCol.Cname}}</p>
+              <p class="p1" style="color: #cccccc">{{goodListCol.Cdescribe}}</p></div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div class=" padding-bottom item-button-right">最新课程
+            <button class="button">更多<i class="icon ion-ios-arrow-right"></i></button>
+          </div>
+          <div class="row" ng-repeat="newListRaw in newL">
+            <div class="col col-50" ng-repeat="newListCol in newListRaw">
+              <img src="{{newListCol.Cpic}}" alt="" class="pic1" ng-click="goIn1(newListCol.ID)">
+              <p>{{newListCol.Cname}}</p>
+              <p class="p1" style="color: #cccccc">{{newListCol.Cdescribe}}</p></div>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="item">
+          <div class=" padding-bottom item-button-right" style="margin-bottom: 10px;"><span>猜你喜欢</span>
+            <button class="button">更多<i class="icon ion-ios-arrow-right"></i></button>
+          </div>
+          <div class="row">
+            <div class="col col-50">
+              <img src="img/3.jpg" alt="" class="pic2">
+            </div>
+            <div class="col col-50">
+              <p>美女</p>
+              <p class="p1">6666</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-50">
+              <img src="img/3.jpg" alt="" class="pic2">
+            </div>
+            <div class="col col-50">
+              <p>美女</p>
+              <p class="p1">6666</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-50">
+              <img src="img/3.jpg" alt="" class="pic2">
+            </div>
+            <div class="col col-50">
+              <p>美女</p>
+              <p class="p1">6666</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-50">
+              <img src="img/3.jpg" alt="" class="pic2">
+            </div>
+            <div class="col col-50">
+              <p>美女</p>
+              <p class="p1">6666</p>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+
+    <!--左划栏-->
+
+
+
+
+</ion-view>
